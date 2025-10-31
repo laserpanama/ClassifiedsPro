@@ -14,18 +14,21 @@ Classifieds Pro is a full-stack application designed to automate the management 
 ## Tech Stack
 
 ### Backend
+
 - **Framework:** FastAPI
 - **Database:** MongoDB (via `motor`)
 - **Web Automation:** Playwright
 - **Scheduling:** APScheduler
 - **AI Integration:** `emergentintegrations`
-- **Dependency Management:** `pip`
+- **Dependency Management:** `pip` with `requirements.txt`
 
 ### Frontend
+
 - **Framework:** React (via `create-react-app`)
 - **UI Library:** `shadcn/ui`
 - **Styling:** Tailwind CSS
 - **API Communication:** Axios
+- **Testing:** Jest with React Testing Library
 - **Dependency Management:** `npm`
 
 ## Project Structure
@@ -36,83 +39,131 @@ The project is a monorepo located in the `/app` directory, with two main sub-dir
   - `/api`: Contains the API endpoint routers.
   - `/models`: Contains the Pydantic data models.
   - `/services`: Contains the business logic for services like AI, automation, and scheduling.
-  - `/tests`: Contains integration tests for the API.
+  - `/tests`: Contains pytest test suite for backend components.
+  - `requirements.txt`: All backend dependencies for easy installation.
+  - `main.py`: Entry point for the FastAPI application.
+
 - `/app/frontend`: The React application.
-  - `/src/components`: Contains reusable React components, including the `shadcn/ui` components.
-  - `/src/pages`: Contains the main page components for the application.
-  - `/src/services`: Contains the services for communicating with the backend API.
+  - `/src`: Contains React components, pages, and services.
+  - `/public`: Contains static assets.
+  - `jest.config.js`: Jest configuration for testing.
+  - `package.json`: Frontend dependencies and scripts.
+  - `tailwind.config.js`: Tailwind CSS configuration.
 
 ## Setup and Installation
 
 ### Backend
 
-1.  **Navigate to the backend directory:**
-    ```bash
-    cd app/backend
-    ```
+1. **Navigate to the backend directory:**
+   ```bash
+   cd app/backend
+   ```
 
-2.  **Install Python dependencies:**
-    It is recommended to use a virtual environment.
-    ```bash
-    pip install -r requirements.txt
-    # Note: A requirements.txt file would need to be generated. For now, install packages from the code.
-    ```
+2. **Create a virtual environment (optional but recommended):**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-3.  **Create the environment file:**
-    Create a `.env` file in the `app/backend` directory and add the following variables:
-    ```
-    UNIVERSAL_KEY="your_emergentintegrations_api_key"
-    MONGO_URL="mongodb://localhost:27017"
-    DB_NAME="classifieds_pro"
-    CORS_ORIGINS="*"
-    ```
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables:**
+   Create a `.env` file in the `app/backend` directory with the required variables:
+   ```
+   MONGODB_URI=mongodb://localhost:27017
+   DATABASE_NAME=classifieds_pro
+   UNIVERSAL_KEY=your_key_here
+   TWOCAPTCHA_API_KEY=your_api_key_here
+   ```
 
 ### Frontend
 
-1.  **Navigate to the frontend directory:**
-    ```bash
-    cd app/frontend
-    ```
+1. **Navigate to the frontend directory:**
+   ```bash
+   cd app/frontend
+   ```
 
-2.  **Install NPM dependencies:**
-    ```bash
-    npm install
-    ```
+2. **Install NPM dependencies:**
+   ```bash
+   npm install
+   ```
 
 ## How to Run
 
 ### Backend
 
 From the `app/backend` directory, run the following command to start the FastAPI server:
+
 ```bash
 uvicorn main:app --reload
 ```
+
 The server will be available at `http://localhost:8001`.
 
 ### Frontend
 
 From the `app/frontend` directory, run the following command to start the React development server:
+
 ```bash
 npm start
 ```
+
 The application will be available at `http://localhost:3000`.
 
 ## Testing
 
+### Backend Testing
+
 The backend includes a suite of integration tests. To run them:
 
-1.  **Navigate to the project root:**
-    ```bash
-    cd /app
-    ```
-2.  **Run pytest:**
-    ```bash
-    PYTHONPATH=. /home/jules/.pyenv/shims/pytest app/backend/tests/
-    ```
-**Note:** During development, I encountered an intractable `TimeoutError` with the test runner (`asgi-lifespan`) in this specific environment. The tests are written to be correct and use best practices (mocking, dependency injection), but they may not pass in this environment without further debugging of the environment itself.
+1. **Navigate to the backend directory:**
+   ```bash
+   cd app/backend
+   ```
+
+2. **Run pytest:**
+   ```bash
+   pytest
+   ```
+
+**Note:** During development, an intractable `TimeoutError` was encountered with the test runner (`asgi-lifespan`) in some environments. The tests are written to be correct and use best practices (mocking, dependency injection), but they may require environment-specific debugging.
+
+### Frontend Testing
+
+The frontend now includes Jest configuration and example tests. To run frontend tests:
+
+1. **Navigate to the frontend directory:**
+   ```bash
+   cd app/frontend
+   ```
+
+2. **Run Jest tests:**
+   ```bash
+   npm test
+   ```
+
+Test files should follow the naming convention: `*.test.js` or `*.spec.js`
+
+**Configuration:** Jest is configured in `jest.config.js` to work with React and supports path aliases like `@/` for the src directory.
 
 ## Known Limitations
 
-- **CAPTCHA:** The target website, `wanuncios.com`, uses CAPTCHA on both its login and ad posting pages. The current automation service does not solve these CAPTCHAs and will fail if one is encountered. A third-party CAPTCHA solving service (e.g., 2Captcha, Anti-Captcha) would need to be integrated to make the automation reliable.
-- **No Frontend Tests:** The project currently lacks a testing suite for the React frontend.
-- **No CI/CD:** There is no continuous integration or deployment pipeline set up.
+- **CAPTCHA:** The target website, `wanuncios.com`, uses CAPTCHA on both its login and ad posting pages. The current automation service has support for flexible CAPTCHA solving methods (API-based via 2Captcha, local scripts, or manual solving), but these require configuration.
+
+- **Frontend Tests:** While Jest is now configured, comprehensive test coverage for React components is still in progress. A basic example test (`App.test.js`) has been added as a starting point.
+
+- **No CI/CD:** There is no continuous integration or deployment pipeline set up. This should be implemented for production use.
+
+## Next Steps
+
+- Expand frontend test coverage with more comprehensive component tests
+- Implement CI/CD pipeline using GitHub Actions
+- Add end-to-end (E2E) tests with tools like Cypress or Playwright
+- Optimize MongoDB queries and add proper indexing
+- Implement user authentication and authorization
+- Add proper error handling and logging throughout the application
+- Create API documentation (Swagger/OpenAPI)
+- Deploy to production environment
