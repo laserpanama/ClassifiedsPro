@@ -1,0 +1,27 @@
+# Core dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+starlette==0.27.0
+
+# Database
+motor==3.3.2
+pydantic==2.5.0
+
+# Environment variables
+python-dotenv==1.0.0
+
+# HTTP client
+requests==2.31.0
+
+# Browser automation
+playwright==1.40.0
+
+# Testing
+pytest==7.4.3
+httpx==0.25.2
+mongomock-motor==0.0.23
+pytest-mock==3.12.0
+anyio==4.1.0
+
+# Utilities
+typing-extensions==4.8.0
