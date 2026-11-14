@@ -3,13 +3,15 @@ import scheduleService from '../services/scheduleService';
 import adService from '../services/adService';
 import ScheduleList from '../components/schedules/ScheduleList';
 import ScheduleForm from '../components/schedules/ScheduleForm';
-import { Button } from '../components/ui/button';
+import { Button } from 'components/ui/button';
+import { useToast } from '../components/ui/toast';
 
 const SchedulesPage = () => {
   const [schedules, setSchedules] = useState([]);
   const [ads, setAds] = useState([]);
   const [editingSchedule, setEditingSchedule] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const fetchSchedules = useCallback(async () => {
     try {
@@ -17,8 +19,9 @@ const SchedulesPage = () => {
       setSchedules(response.data);
     } catch (error) {
       console.error('Error fetching schedules:', error);
+      toast('Could not load schedules.', 'error');
     }
-  }, []);
+  }, [toast]);
 
   const fetchAds = useCallback(async () => {
     try {
@@ -26,8 +29,9 @@ const SchedulesPage = () => {
       setAds(response.data);
     } catch (error) {
       console.error('Error fetching ads:', error);
+      toast('Could not load ads.', 'error');
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchSchedules();
@@ -38,14 +42,17 @@ const SchedulesPage = () => {
     try {
       if (editingSchedule) {
         await scheduleService.updateSchedule(editingSchedule.id, formData);
+        toast('Schedule updated.', 'success');
       } else {
         await scheduleService.createSchedule(formData);
+        toast('Schedule created.', 'success');
       }
       await fetchSchedules();
       setEditingSchedule(null);
       setShowForm(false);
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast(error.response?.data?.detail || 'Could not save the schedule.', 'error');
     }
   };
 
@@ -55,6 +62,7 @@ const SchedulesPage = () => {
       await fetchSchedules();
     } catch (error) {
       console.error('Error toggling schedule:', error);
+      toast('Could not toggle the schedule.', 'error');
     }
   };
 
@@ -65,7 +73,7 @@ const SchedulesPage = () => {
 
   const handleAddNew = () => {
     if (ads.length === 0) {
-      alert("Please add at least one ad before creating a schedule.");
+      toast('Please add at least one ad before creating a schedule.', 'info');
       return;
     }
     setEditingSchedule(null);
@@ -77,8 +85,10 @@ const SchedulesPage = () => {
       try {
         await scheduleService.deleteSchedule(id);
         await fetchSchedules();
+        toast('Schedule deleted.', 'success');
       } catch (error) {
         console.error('Error deleting schedule:', error);
+        toast('Could not delete the schedule.', 'error');
       }
     }
   };

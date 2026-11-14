@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from 'components/ui/button';
+import { Input } from 'components/ui/input';
+import { Label } from 'components/ui/label';
+import { Textarea } from 'components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from 'components/ui/select';
 import adService from '../../services/adService';
 
 // In a real app, these would come from the backend or a config file
@@ -41,7 +41,7 @@ const AdForm = ({ onSubmit, accounts, initialData = null }) => {
         province: initialData.province || '',
         category: initialData.category || '',
         subcategory: initialData.subcategory || '',
-        price: initialData.price || '',
+        price: initialData.price ?? '',
         zone: initialData.zone || '',
         account_id: initialData.account_id || '',
       });
@@ -84,7 +84,12 @@ const AdForm = ({ onSubmit, accounts, initialData = null }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const dataToSubmit = {
+      ...formData,
+      price: formData.price === '' || formData.price === null || formData.price === undefined ? null : Number(formData.price),
+      zone: formData.zone.trim() === '' ? null : formData.zone.trim(),
+    };
+    onSubmit(dataToSubmit);
   };
 
   return (

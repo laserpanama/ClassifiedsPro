@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import accountService from '../services/accountService';
 import AccountList from '../components/accounts/AccountList';
 import AccountForm from '../components/accounts/AccountForm';
-import { Button } from '../components/ui/button';
+import { Button } from 'components/ui/button';
+import { useToast } from '../components/ui/toast';
 
 const AccountsPage = () => {
   const [accounts, setAccounts] = useState([]);
   const [editingAccount, setEditingAccount] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const fetchAccounts = useCallback(async () => {
     try {
@@ -15,9 +17,9 @@ const AccountsPage = () => {
       setAccounts(response.data);
     } catch (error) {
       console.error('Error fetching accounts:', error);
-      // In a real app, show a toast notification
+      toast('Could not load accounts.', 'error');
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchAccounts();
@@ -27,14 +29,17 @@ const AccountsPage = () => {
     try {
       if (editingAccount) {
         await accountService.updateAccount(editingAccount.id, formData);
+        toast('Account updated.', 'success');
       } else {
         await accountService.createAccount(formData);
+        toast('Account created.', 'success');
       }
       await fetchAccounts();
       setEditingAccount(null);
       setShowForm(false);
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast(error.response?.data?.detail || 'Could not save the account.', 'error');
     }
   };
 
@@ -49,13 +54,14 @@ const AccountsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    // Optional: Add a confirmation dialog before deleting
-    if (window.confirm('Are you sure you want to delete this account?')) {
+    if (window.confirm('Are you sure you want to delete this account? Its ads and schedules will be deleted too.')) {
       try {
         await accountService.deleteAccount(id);
         await fetchAccounts();
+        toast('Account deleted.', 'success');
       } catch (error) {
         console.error('Error deleting account:', error);
+        toast('Could not delete the account.', 'error');
       }
     }
   };

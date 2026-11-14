@@ -7,10 +7,10 @@ import {
   TableHead,
   TableCell,
   TableCaption,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+} from 'components/ui/table';
+import { Button } from 'components/ui/button';
 
-const AdList = ({ ads, onEdit, onDelete, onPublish }) => {
+const AdList = ({ ads, onEdit, onDelete, onPublish, publishingId = null }) => {
   if (!ads || ads.length === 0) {
     return <p>No ads found. Create one to get started!</p>;
   }
@@ -34,8 +34,8 @@ const AdList = ({ ads, onEdit, onDelete, onPublish }) => {
               <TableCell>{ad.category} / {ad.subcategory}</TableCell>
               <TableCell>{ad.last_published_at ? new Date(ad.last_published_at).toLocaleString() : 'Never'}</TableCell>
               <TableCell className="text-right">
-                <Button variant="secondary" size="sm" onClick={() => onPublish(ad.id)}>
-                  Publish
+                <Button variant="secondary" size="sm" disabled={publishingId === ad.id} onClick={() => onPublish(ad.id)}>
+                  {publishingId === ad.id ? 'Starting…' : 'Publish'}
                 </Button>
                 <Button variant="outline" size="sm" className="ml-2" onClick={() => onEdit(ad)}>
                   Edit

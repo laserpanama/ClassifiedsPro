@@ -1,29 +1,35 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8001/api';
+import api from './api';
 
 const getAds = () => {
-  return axios.get(`${API_URL}/ads/`);
+  return api.get('/ads/');
 };
 
 const getAd = (id) => {
-  return axios.get(`${API_URL}/ads/${id}`);
+  return api.get(`/ads/${id}`);
 };
 
 const createAd = (ad) => {
-  return axios.post(`${API_URL}/ads/`, ad);
+  return api.post('/ads/', ad);
 };
 
 const updateAd = (id, ad) => {
-  return axios.patch(`${API_URL}/ads/${id}`, ad);
+  return api.patch(`/ads/${id}`, ad);
 };
 
 const deleteAd = (id) => {
-  return axios.delete(`${API_URL}/ads/${id}`);
+  return api.delete(`/ads/${id}`);
 };
 
 const generateAdText = (prompt) => {
-  return axios.post(`${API_URL}/ads/generate-text`, { prompt });
+  return api.post('/ads/generate-text', { prompt });
+};
+
+const publishAd = (id) => {
+  return api.post(`/ads/${id}/publish`);
+};
+
+const getPublishHistory = (id) => {
+  return api.get(`/ads/${id}/publish-history`);
 };
 
 const adService = {
@@ -33,6 +39,8 @@ const adService = {
   updateAd,
   deleteAd,
   generateAdText,
+  publishAd,
+  getPublishHistory,
 };
 
 export default adService;
