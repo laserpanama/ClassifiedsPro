@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from 'components/ui/button';
+import { Input } from 'components/ui/input';
+import { Label } from 'components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from 'components/ui/select';
 
 const ScheduleForm = ({ onSubmit, ads, initialData = null }) => {
   const [formData, setFormData] = useState({
@@ -38,7 +38,11 @@ const ScheduleForm = ({ onSubmit, ads, initialData = null }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const interval = Number(formData.republish_interval_hours);
+    onSubmit({
+      ...formData,
+      republish_interval_hours: Number.isFinite(interval) && interval >= 1 ? Math.floor(interval) : 1,
+    });
   };
 
   return (

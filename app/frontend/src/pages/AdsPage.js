@@ -3,13 +3,16 @@ import adService from '../services/adService';
 import accountService from '../services/accountService';
 import AdList from '../components/ads/AdList';
 import AdForm from '../components/ads/AdForm';
-import { Button } from '../components/ui/button';
+import { Button } from 'components/ui/button';
+import { useToast } from '../components/ui/toast';
 
 const AdsPage = () => {
   const [ads, setAds] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [editingAd, setEditingAd] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [publishingId, setPublishingId] = useState(null);
+  const { toast } = useToast();
 
   const fetchAds = useCallback(async () => {
     try {
@@ -17,8 +20,9 @@ const AdsPage = () => {
       setAds(response.data);
     } catch (error) {
       console.error('Error fetching ads:', error);
+      toast('Could not load ads.', 'error');
     }
-  }, []);
+  }, [toast]);
 
   const fetchAccounts = useCallback(async () => {
     try {
@@ -26,8 +30,9 @@ const AdsPage = () => {
       setAccounts(response.data.filter(acc => acc.is_active)); // Only use active accounts
     } catch (error) {
       console.error('Error fetching accounts:', error);
+      toast('Could not load accounts.', 'error');
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchAds();
@@ -38,14 +43,17 @@ const AdsPage = () => {
     try {
       if (editingAd) {
         await adService.updateAd(editingAd.id, formData);
+        toast('Ad updated.', 'success');
       } else {
         await adService.createAd(formData);
+        toast('Ad created.', 'success');
       }
       await fetchAds();
       setEditingAd(null);
       setShowForm(false);
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast(error.response?.data?.detail || 'Could not save the ad.', 'error');
     }
   };
 
@@ -56,7 +64,7 @@ const AdsPage = () => {
 
   const handleAddNew = () => {
     if (accounts.length === 0) {
-      alert("Please add at least one active account before creating an ad.");
+      toast('Please add at least one active account before creating an ad.', 'info');
       return;
     }
     setEditingAd(null);
@@ -64,19 +72,29 @@ const AdsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this ad?')) {
+    if (window.confirm('Are you sure you want to delete this ad? Its schedules will be deleted too.')) {
       try {
         await adService.deleteAd(id);
         await fetchAds();
+        toast('Ad deleted.', 'success');
       } catch (error) {
         console.error('Error deleting ad:', error);
+        toast('Could not delete the ad.', 'error');
       }
     }
   };
 
   const handlePublish = async (id) => {
-    // This is a placeholder for now
-    alert(`Publishing ad ${id}... (this will be implemented later)`);
+    setPublishingId(id);
+    try {
+      await adService.publishAd(id);
+      toast('Ad publishing started in the background.', 'success');
+    } catch (error) {
+      console.error('Error publishing ad:', error);
+      toast(error.response?.data?.detail || 'Could not start publishing.', 'error');
+    } finally {
+      setPublishingId(null);
+    }
   };
 
   return (
@@ -95,7 +113,7 @@ const AdsPage = () => {
       )}
 
       <div className="mt-6">
-        <AdList ads={ads} onEdit={handleEdit} onDelete={handleDelete} onPublish={handlePublish} />
+        <AdList ads={ads} onEdit={handleEdit} onDelete={handleDelete} onPublish={handlePublish} publishingId={publishingId} />
       </div>
     </div>
   );

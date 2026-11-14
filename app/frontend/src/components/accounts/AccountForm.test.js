@@ -2,11 +2,11 @@ import { render, screen } from '@testing-library/react';
 import AccountForm from './AccountForm';
 
 // Mock the Select component as it's complex to test without a full DOM
-jest.mock('@/components/ui/select', () => ({
+jest.mock('components/ui/select', () => ({
   Select: ({ children }) => <div>{children}</div>,
   SelectContent: ({ children }) => <div>{children}</div>,
   SelectItem: ({ children }) => <div>{children}</div>,
-  SelectTrigger: ({ children }) => <div>{children}</div>,
+  SelectTrigger: ({ children, ...props }) => <button type="button" {...props}>{children}</button>,
   SelectValue: () => <div></div>,
 }));
 

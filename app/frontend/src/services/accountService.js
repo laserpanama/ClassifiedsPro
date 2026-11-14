@@ -1,27 +1,23 @@
-import axios from 'axios';
-
-// A default API URL for local development.
-// In a real app, this would be configured via .env files for different environments.
-const API_URL = 'http://localhost:8001/api';
+import api from './api';
 
 const getAccounts = () => {
-  return axios.get(`${API_URL}/accounts/`);
+  return api.get('/accounts/');
 };
 
 const getAccount = (id) => {
-  return axios.get(`${API_URL}/accounts/${id}`);
+  return api.get(`/accounts/${id}`);
 };
 
 const createAccount = (account) => {
-  return axios.post(`${API_URL}/accounts/`, account);
+  return api.post('/accounts/', account);
 };
 
 const updateAccount = (id, account) => {
-  return axios.patch(`${API_URL}/accounts/${id}`, account);
+  return api.patch(`/accounts/${id}`, account);
 };
 
 const deleteAccount = (id) => {
-  return axios.delete(`${API_URL}/accounts/${id}`);
+  return api.delete(`/accounts/${id}`);
 };
 
 const accountService = {

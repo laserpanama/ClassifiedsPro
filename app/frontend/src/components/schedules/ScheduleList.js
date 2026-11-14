@@ -7,9 +7,9 @@ import {
   TableHead,
   TableCell,
   TableCaption,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+} from 'components/ui/table';
+import { Button } from 'components/ui/button';
+import { Switch } from 'components/ui/switch';
 
 const ScheduleList = ({ schedules, onEdit, onDelete, onToggle }) => {
   if (!schedules || schedules.length === 0) {

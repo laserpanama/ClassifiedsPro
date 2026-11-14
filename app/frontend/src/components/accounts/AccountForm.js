@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from 'components/ui/button';
+import { Input } from 'components/ui/input';
+import { Label } from 'components/ui/label';
+import { Switch } from 'components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from 'components/ui/select';
 
 const AccountForm = ({ onSubmit, initialData = null }) => {
   const [formData, setFormData] = useState({
     email: '',
     wanuncios_password: '',
     captcha_solving_method: 'api',
+    is_active: true,
   });
 
   useEffect(() => {
@@ -23,9 +25,10 @@ const AccountForm = ({ onSubmit, initialData = null }) => {
         email: initialData.email || '',
         wanuncios_password: '', // Always clear password for security
         captcha_solving_method: initialData.captcha_solving_method || 'api',
+        is_active: initialData.is_active !== undefined ? initialData.is_active : true,
       });
     } else {
-      setFormData({ email: '', wanuncios_password: '', captcha_solving_method: 'api' });
+      setFormData({ email: '', wanuncios_password: '', captcha_solving_method: 'api', is_active: true });
     }
   }, [initialData]);
 
@@ -38,15 +41,19 @@ const AccountForm = ({ onSubmit, initialData = null }) => {
     setFormData(prev => ({ ...prev, captcha_solving_method: value }));
   };
 
+  const handleSwitchChange = (checked) => {
+    setFormData(prev => ({ ...prev, is_active: checked }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const dataToSubmit = { ...formData };
     if (!dataToSubmit.wanuncios_password) {
-      delete dataToSubmit.wanuncios_password;
+      delete dataToSubmit.wanuncios_password; // keep current password
     }
     onSubmit(dataToSubmit);
     if (!initialData) {
-        setFormData({ email: '', wanuncios_password: '', captcha_solving_method: 'api' });
+        setFormData({ email: '', wanuncios_password: '', captcha_solving_method: 'api', is_active: true });
     }
   };
 
@@ -77,20 +84,26 @@ const AccountForm = ({ onSubmit, initialData = null }) => {
           onChange={handleChange}
           placeholder="••••••••"
           required={!initialData}
+          autoComplete="new-password"
         />
         {initialData && <p className="text-xs text-muted-foreground">Leave blank to keep the current password.</p>}
       </div>
 
       <div className="space-y-2">
-        <Label>CAPTCHA Solving Method</Label>
+        <Label htmlFor="captcha_solving_method">CAPTCHA Solving Method</Label>
         <Select onValueChange={handleSelectChange} value={formData.captcha_solving_method}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectTrigger id="captcha_solving_method"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="api">API (2captcha)</SelectItem>
             <SelectItem value="manual">Manual</SelectItem>
             <SelectItem value="script" disabled>Script (Not Implemented)</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Label htmlFor="is_active">Account active</Label>
+        <Switch id="is_active" checked={formData.is_active} onCheckedChange={handleSwitchChange} />
       </div>
 
       <Button type="submit">{initialData ? 'Update Account' : 'Create Account'}</Button>

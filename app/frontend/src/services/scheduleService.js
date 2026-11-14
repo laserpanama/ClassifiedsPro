@@ -1,25 +1,23 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8001/api';
+import api from './api';
 
 const getSchedules = () => {
-  return axios.get(`${API_URL}/schedules/`);
+  return api.get('/schedules/');
 };
 
 const getSchedule = (id) => {
-  return axios.get(`${API_URL}/schedules/${id}`);
+  return api.get(`/schedules/${id}`);
 };
 
 const createSchedule = (schedule) => {
-  return axios.post(`${API_URL}/schedules/`, schedule);
+  return api.post('/schedules/', schedule);
 };
 
 const updateSchedule = (id, schedule) => {
-  return axios.patch(`${API_URL}/schedules/${id}`, schedule);
+  return api.patch(`/schedules/${id}`, schedule);
 };
 
 const deleteSchedule = (id) => {
-  return axios.delete(`${API_URL}/schedules/${id}`);
+  return api.delete(`/schedules/${id}`);
 };
 
 const scheduleService = {

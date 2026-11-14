@@ -1,0 +1,46 @@
+# Local/dev deployment of the full stack (MongoDB + backend + frontend).
+# Usage:  docker compose up --build
+# The dashboard is served at http://localhost:3000 (API proxied to the backend).
+#
+# Copy app/backend/.env.example to app/backend/.env and set ADMIN_API_KEY,
+# CREDENTIAL_ENCRYPTION_KEY and your other keys first.
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: .
+      dockerfile: app/backend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - app/backend/.env
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DB_NAME: classifieds_pro
+      CORS_ORIGINS: http://localhost:3000
+    depends_on:
+      - mongo
+    ports:
+      - "8001:8001"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: app/frontend/Dockerfile
+      args:
+        REACT_APP_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mongo_data:
